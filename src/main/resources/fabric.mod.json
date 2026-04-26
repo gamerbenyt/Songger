@@ -1,28 +1,28 @@
 {
   "schemaVersion": 1,
-  "id": "songplayer",
+  "id": "Playy",
   "version": "${version}",
 
-  "name": "Song Player",
-  "description": "A mod for building and playing noteblock songs in Minecraft",
+  "name": "Playy",
+  "description": "A Minecraft Mod adding automated noteblock songs and more.",
   "authors": [
-    "hhhzzzsss"
+    "gamerbenyt"
   ],
   "contact": {
-    "sources": "https://github.com/hhhzzzsss/SongPlayer"
+    "sources": "https://github.com/gamerbenyt/Playy"
   },
 
   "license": "MIT",
-  "icon": "assets/songplayer/icon.png",
+  "icon": "assets/Playy/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.github.hhhzzzsss.songplayer.SongPlayer"
+      "com.github.gamerbenyt.playy.Playy"
     ]
   },
   "mixins": [
-    "songplayer.mixins.json"
+    "playy.mixins.json"
   ],
 
   "depends": {

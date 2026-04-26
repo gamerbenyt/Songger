@@ -1,4 +1,4 @@
-# SongPlayer
+# Playy
 A Fabric mod for Minecraft that plays songs with noteblocks.
 
 If you have questions, want to share songs, or just want to talk about the mod, then come over to the [discord server](https://discord.gg/p2Frd557fF).
@@ -9,7 +9,7 @@ This mod requires fabric api.
 
 # Adding songs
 You can put midis or NoteBlockStudio files in the `.minecraft/songs` folder.
-SongPlayer supports any valid midi and all versions of NBS files.
+Playy supports any valid midi and all versions of NBS files.
 
 # Using the client
 To get started, add some midis or nbs files to your songs folder, and use `$play <filename>` in an open area.
@@ -23,13 +23,13 @@ All the commands are case insensitive.
 
 ### $help
 ### $help \<command>
-If no arguments are given, lists all SongPlayer commands.
+If no arguments are given, lists all Playy commands.
 Otherwise, explains the specified command and shows its syntax.
 
 ### $setPrefix \<prefix>
 *aliases: `$prefix`*
 
-Sets the prefix used for all SongPlayer commands (by default: `$`)
+Sets the prefix used for all Playy commands (by default: `$`)
 
 ### $play \<filename or url>
 Plays a particular midi from the .minecraft/songs folder, or, if a url is specified, downloads the song at that url and tries to play it.
@@ -177,16 +177,16 @@ Toggles flight noclip. When enabled, your local player can clip through blocks w
 ### $songItem setSongName \<name>
 *aliases: `$item`*
 
-Encodes song data into an item. When you right click on such an item, SongPlayer will automatically detect that it is a song item and ask if you want to play it. These items, once created, can be used by anyone that is using the necessary version of SongPlayer.
+Encodes song data into an item. When you right click on such an item, Playy will automatically detect that it is a song item and ask if you want to play it. These items, once created, can be used by anyone that is using the necessary version of Playy.
 
-It will automatically generate custom item names and lore, but these can be modified or deleted without affecting the song data, so feel free to edit the items as you wish. SongPlayer only looks at the `SongItemData` tag.
+It will automatically generate custom item names and lore, but these can be modified or deleted without affecting the song data, so feel free to edit the items as you wish. Playy only looks at the `SongItemData` tag.
 
 ### $testSong
 A command I used for testing during development.
 It plays all 400 possible noteblock sounds in order.
 
 # Mechanism
-SongPlayer places noteblocks with nbt and instrument data already in them, so the noteblocks do not need to be individually tuned.
+Playy places noteblocks with nbt and instrument data already in them, so the noteblocks do not need to be individually tuned.
 
 The client will automatically detect what noteblocks are needed and place them automatically before each song is played, which makes playing songs quite easy. The only drawback is that you need to be able to switch between creative and survival mode, which my client will attempt to do automatically.
 
@@ -195,6 +195,6 @@ When playing a song, freecam is enabled. You will be able to move around freely,
 ## Acknowledgements
 **Ayunami2000**: Came up with the concept of directly placing noteblocks with nbt data instead of manually tuning them.
 
-**Sk8kman**: Several of Songplayer 3.0's changes were inspired by their fork of SongPlayer. Most notably was their alternate stage designs, but it also motivated me to implement playlists and togglable movements.
+**Sk8kman**: Several of Playy 3.0's changes were inspired by their fork of Playy. Most notably was their alternate stage designs, but it also motivated me to implement playlists and togglable movements.
 
 **Lizard16**: Cited by Sk8kman as the person who made the spherical stage design.

@@ -11,7 +11,7 @@
 				"threshold": 751642880,
 				"model": {
 					"type": "model",
-					"model": "songplayer:item/song_item"
+					"model": "Playy:item/song_item"
 				}
 			},
 			{
