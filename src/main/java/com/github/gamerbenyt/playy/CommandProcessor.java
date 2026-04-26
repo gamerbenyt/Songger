@@ -63,6 +63,7 @@ public class CommandProcessor {
 		commands.add(new testSongCommand());
 		commands.add(new approveCommand());
 		commands.add(new denyCommand());
+		commands.add(new queueWebCommand());
 
 		for (Command command : commands) {
 			commandMap.put(command.getName().toLowerCase(Locale.ROOT), command);
@@ -1429,63 +1430,122 @@ return new String[0];
 public String getDescription() {
 return "Approves the next pending song request";
 }
-public boolean processCommand(String args) {
-if (args.length() == 0) {
-if (!Playy.pendingRequests.isEmpty()) {
-String song = Playy.pendingRequests.remove(0);
-Util.sendCommand("queue add " + song);
-Util.showChatMessage("§6Approved and added " + song + " to queue");
-} else {
-Util.showChatMessage("§6No pending requests");
-}
-return true;
-}
-return false;
-}
-}
-
+@Override
+        public boolean processCommand(String args) {
+            if (args.length() == 0) {
+                if (!Playy.pendingRequests.isEmpty()) {
+                    // 1. Get the song name
+                    String song = Playy.pendingRequests.remove(0);
+                    
+                    // 2. We don't need to escape quotes if we aren't using them in the command.
+                    // Most Minecraft mods handle song names with spaces just fine 
+                    // without quotes as long as it's the last part of the command.
+                    if (MC.player != null && MC.player.networkHandler != null) {
+                        // Removed the escaped quotes from the command string
+                        MC.player.networkHandler.sendChatMessage("$play " + song);
+                        MC.player.networkHandler.sendChatMessage("$queue");
+                    }
+                    
+                    Util.showChatMessage("§6Approved and played " + song + ". Queue shown.");
+                } else {
+                    Util.showChatMessage("§6No pending requests");
+                }
+                return true;
+            }
+            return false;
+        }
+    }
 static class denyCommand extends Command {
-public String getName() {
-return "deny";
-}
-public String[] getSyntax() {
-return new String[0];
-}
-public String getDescription() {
-return "Denies the next pending song request";
-}
-public boolean processCommand(String args) {
-if (args.length() == 0) {
-if (!Playy.pendingRequests.isEmpty()) {
-String song = Playy.pendingRequests.remove(0);
-Util.showChatMessage("§6Denied request for " + song);
-} else {
-Util.showChatMessage("§6No pending requests");
-}
-return true;
-}
-return false;
-}
-}
+        public String getName() {
+            return "deny";
+        }
 
-	public static CompletableFuture<Suggestions> handleSuggestions(String text, SuggestionsBuilder suggestionsBuilder) {
-		if (!text.contains(" ")) {
-			List<String> names = commandCompletions
-					.stream()
-					.map((commandName) -> Config.getConfig().prefix+commandName)
-					.collect(Collectors.toList());
-			return CommandSource.suggestMatching(names, suggestionsBuilder);
-		} else {
-			String[] split = text.split(" ", 2);
-			if (split[0].startsWith(Config.getConfig().prefix)) {
-				String commandName = split[0].substring(1).toLowerCase(Locale.ROOT);
-				if (commandMap.containsKey(commandName)) {
-					return commandMap.get(commandName).getSuggestions(split.length == 1 ? "" : split[1], suggestionsBuilder);
-				}
-			}
-			return null;
-		}
-}
-}
+        public String[] getSyntax() {
+            return new String[0];
+        }
 
+        public String getDescription() {
+            return "Denies the next pending song request";
+        }
 
+        public boolean processCommand(String args) {
+            if (args.length() == 0) {
+                if (!Playy.pendingRequests.isEmpty()) {
+                    String song = Playy.pendingRequests.remove(0);
+                    Util.showChatMessage("§6Denied request for " + song);
+                } else {
+                    Util.showChatMessage("§6No pending requests");
+                }
+                return true;
+            }
+            return false;
+        }
+    } // Closes denyCommand
+
+    private static class queueWebCommand extends Command {
+        public String getName() {
+            return "queueweb";
+        }
+
+        public String[] getSyntax() {
+            return new String[]{"<enable|disable>"};
+        }
+
+        public String getDescription() {
+            return "Enables or disables the web song request page";
+        }
+
+        public boolean processCommand(String args) {
+            if (args.length() == 0) return false;
+            String action = args.trim().toLowerCase(Locale.ROOT);
+            switch (action) {
+                case "enable":
+                    if (Playy.server != null) {
+                        Util.showChatMessage("§6Web request page already enabled.");
+                    } else {
+                        Playy.webEnabled = true;
+                        Playy.startWebServer();
+                        if (Playy.server != null) {
+                            String local = String.join(", ", Playy.localIPs);
+                            Util.showChatMessage("§6Web request page enabled. Local IPs: " + (local.isEmpty() ? "none found" : local));
+                            Util.showChatMessage("§6Public IP: " + Playy.publicIP);
+                        } else {
+                            Util.showChatMessage("§cFailed to start web server.");
+                        }
+                    }
+                    return true;
+                case "disable":
+                    if (Playy.server == null) {
+                        Util.showChatMessage("§6Web request page already disabled.");
+                    } else {
+                        Playy.webEnabled = false;
+                        Playy.stopWebServer();
+                        Playy.server = null;
+                        Util.showChatMessage("§6Web request page disabled.");
+                    }
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    } // Closes queueWebCommand
+
+    public static CompletableFuture<Suggestions> handleSuggestions(String text, SuggestionsBuilder suggestionsBuilder) {
+        if (!text.contains(" ")) {
+            List<String> names = commandCompletions
+                    .stream()
+                    .map((commandName) -> Config.getConfig().prefix + commandName)
+                    .collect(Collectors.toList());
+            return CommandSource.suggestMatching(names, suggestionsBuilder);
+        } else {
+            String[] split = text.split(" ", 2);
+            if (split[0].startsWith(Config.getConfig().prefix)) {
+                String commandName = split[0].substring(1).toLowerCase(Locale.ROOT);
+                if (commandMap.containsKey(commandName)) {
+                    return commandMap.get(commandName).getSuggestions(split.length == 1 ? "" : split[1], suggestionsBuilder);
+                }
+            }
+            return suggestionsBuilder.buildFuture();
+        }
+    }
+} // Closes CommandProcessor class
